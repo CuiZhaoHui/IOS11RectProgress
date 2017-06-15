@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RectProgress">
+        <attr name="bgColor" format="color"/>
+        <attr name="progressColor" format="color"/>
+        <attr name="iconSrc" format="integer"/>
+
+    </declare-styleable>
+
+</resources>
