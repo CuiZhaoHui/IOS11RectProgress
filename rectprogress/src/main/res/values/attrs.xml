@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RectProgress">
-        <attr name="bgColor" format="color"/>
-        <attr name="progressColor" format="color"/>
-        <attr name="iconSrc" format="integer"/>
-
+        <attr name="progressValue" format="integer" />
+        <attr name="progressMax" format="integer" />
+        <attr name="bgColor" format="color" />
+        <attr name="contentPadding" format="color" />
+        <attr name="progressColor" format="color" />
+        <attr name="iconSrc" format="integer" />
+        <attr name="progressOrientation">
+            <enum name="vertical" value="1" />
+            <enum name="horizontal" value="2" />
+        </attr>
     </declare-styleable>
 
 </resources>
