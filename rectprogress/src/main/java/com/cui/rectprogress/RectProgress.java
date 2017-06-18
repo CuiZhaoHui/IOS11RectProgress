@@ -37,6 +37,7 @@ public class RectProgress extends View {
     private int orientation = VERTICAL;
     private int max = 100;
     private int progress = 15;
+    private int imgSrc = 0;
 
 
     public RectProgress(Context context) {
@@ -64,6 +65,7 @@ public class RectProgress extends View {
             progress = typedArray.getInteger(R.styleable.RectProgress_progressValue, progress);
             max = typedArray.getInteger(R.styleable.RectProgress_progressMax, max);
             orientation = typedArray.getInteger(R.styleable.RectProgress_progressOrientation, VERTICAL);
+            imgSrc = typedArray.getInteger(R.styleable.RectProgress_iconSrc, 0);
             if (max < progress) {
                 progress = max;
             }
@@ -109,6 +111,9 @@ public class RectProgress extends View {
             bgPaint.setXfermode(null);
         }
         canvas.restoreToCount(layerId);
+        if (imgSrc != 0){
+//            canvas.drawBitmap();
+        }
     }
 
     @Override

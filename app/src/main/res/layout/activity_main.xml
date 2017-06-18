@@ -13,6 +13,7 @@
         app:progressOrientation="vertical"
         app:progressColor="@color/colorAccent"
         app:progressMax="100"
+        app:iconSrc="@drawable/ic_light"
         app:progressValue="30"
         />
 
