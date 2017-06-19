@@ -118,6 +118,11 @@ public class RectProgress extends View {
                     , getHeight() - getPaddingBottom());
         }
 
+        if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
+//            canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
+            canvas.drawBitmap(bitmap,new Matrix(),bgPaint);
+        }
+
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
         int layerId = canvas.saveLayer(0, 0, canvasWidth, canvasHeight, null, Canvas.ALL_SAVE_FLAG);
@@ -130,11 +135,9 @@ public class RectProgress extends View {
             bgPaint.setXfermode(null);
         }
         canvas.restoreToCount(layerId);
+//        canvas.restore();
+        canvas.save();
 
-        if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
-//            canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
-            canvas.drawBitmap(bitmap,new Matrix(),bgPaint);
-        }
     }
 
     @Override
