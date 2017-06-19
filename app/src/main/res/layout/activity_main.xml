@@ -7,14 +7,15 @@
     tools:context="com.czh.ios11rectprogress.MainActivity">
 
     <com.cui.rectprogress.RectProgress
-        android:layout_width="50dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="500dp"
         android:layout_gravity="center"
         app:progressOrientation="vertical"
         app:progressColor="@color/colorAccent"
         app:progressMax="100"
         app:iconSrc="@drawable/ic_light"
         app:progressValue="30"
+        app:iconPadding="20dp"
         />
 
 </FrameLayout>

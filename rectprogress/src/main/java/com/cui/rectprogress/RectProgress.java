@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -49,6 +48,8 @@ public class RectProgress extends View {
     private Bitmap bitmap;
     private Rect srcRect;
     private Rect dstRect;
+    private Matrix bitmapMatrix;
+    private float iconPadding;
 
 
     public RectProgress(Context context) {
@@ -77,6 +78,7 @@ public class RectProgress extends View {
             max = typedArray.getInteger(R.styleable.RectProgress_progressMax, max);
             orientation = typedArray.getInteger(R.styleable.RectProgress_progressOrientation, VERTICAL);
             imgSrc = typedArray.getResourceId(R.styleable.RectProgress_iconSrc, 0);
+            iconPadding = typedArray.getDimensionPixelSize(R.styleable.RectProgress_iconPadding,10);
             if (max < progress) {
                 progress = max;
             }
@@ -84,8 +86,6 @@ public class RectProgress extends View {
 
             if (imgSrc != 0) {
                 bitmap = ((BitmapDrawable) getResources().getDrawable(imgSrc)).getBitmap();
-                srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-                dstRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
             }
         }
 
@@ -100,28 +100,37 @@ public class RectProgress extends View {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        bgRect.set(iconPadding
+                , iconPadding
+                , getWidth() - iconPadding
+                , getHeight() - iconPadding);
+
+        progressRect.set(iconPadding
+                , bgRect.bottom - progress * bgRect.height() / max
+                , getWidth() - iconPadding
+                , getHeight() - iconPadding);
+
+        if (bitmap != null){
+            srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            int iconSideLength = (int) (bgRect.width() - iconPadding * 2);
+            dstRect = new Rect((int)bgRect.left + (int)iconPadding
+                    , (int)(bgRect.bottom - iconSideLength - iconPadding)
+                    , (int)bgRect.right - (int)iconPadding
+                    , (int)bgRect.bottom - (int)iconPadding);
+        }
+
+
+        bitmapMatrix = new Matrix();
+        bitmapMatrix.setScale(0.5f,0.5f);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (bgRect.isEmpty()) {
-            bgRect.set(getPaddingLeft()
-                    , getPaddingTop()
-                    , getWidth() - getPaddingRight()
-                    , getHeight() - getPaddingBottom());
-
-            progressRect.set(getPaddingLeft()
-                    , bgRect.bottom - progress * bgRect.height() / max
-                    , getWidth() - getPaddingRight()
-                    , getHeight() - getPaddingBottom());
-        }
-
-        if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
-//            canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
-            canvas.drawBitmap(bitmap,new Matrix(),bgPaint);
-        }
+//        if (bgRect.isEmpty()) {
+//
+//        }
 
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
@@ -133,10 +142,19 @@ public class RectProgress extends View {
             // draw progress
             canvas.drawRect(progressRect, progressPaint);
             bgPaint.setXfermode(null);
+
+
+            if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
+            canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
+//                canvas.drawBitmap(bitmap, bitmapMatrix,bgPaint);
+            }
+
         }
         canvas.restoreToCount(layerId);
+        // TODO: 2017/6/19  弄明白为什么在xml预览中,canvas.restoreToCount
+        // TODO: 会导致后续的canvas对象为空 但canvas.restore方法则不会导致这个问题
 //        canvas.restore();
-        canvas.save();
+//        canvas.save();
 
     }
 
