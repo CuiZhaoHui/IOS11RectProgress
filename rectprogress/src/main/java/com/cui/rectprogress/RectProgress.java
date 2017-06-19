@@ -1,12 +1,18 @@
 package com.cui.rectprogress;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -27,6 +33,8 @@ public class RectProgress extends View {
 
     private int bgColor = defaultBgColor;
     private int progressColor = defaultProgressColor;
+
+    private Resources mResources;
     /*画背景使用的Rect*/
     private RectF bgRect = new RectF();
     /*画进度使用的Rect*/
@@ -38,6 +46,9 @@ public class RectProgress extends View {
     private int max = 100;
     private int progress = 15;
     private int imgSrc = 0;
+    private Bitmap bitmap;
+    private Rect srcRect;
+    private Rect dstRect;
 
 
     public RectProgress(Context context) {
@@ -65,11 +76,17 @@ public class RectProgress extends View {
             progress = typedArray.getInteger(R.styleable.RectProgress_progressValue, progress);
             max = typedArray.getInteger(R.styleable.RectProgress_progressMax, max);
             orientation = typedArray.getInteger(R.styleable.RectProgress_progressOrientation, VERTICAL);
-            imgSrc = typedArray.getInteger(R.styleable.RectProgress_iconSrc, 0);
+            imgSrc = typedArray.getResourceId(R.styleable.RectProgress_iconSrc, 0);
             if (max < progress) {
                 progress = max;
             }
             typedArray.recycle();
+
+            if (imgSrc != 0) {
+                bitmap = ((BitmapDrawable) getResources().getDrawable(imgSrc)).getBitmap();
+                srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+                dstRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            }
         }
 
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -78,6 +95,8 @@ public class RectProgress extends View {
         progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         progressPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
         progressPaint.setColor(progressColor);
+
+
     }
 
     @Override
@@ -111,8 +130,10 @@ public class RectProgress extends View {
             bgPaint.setXfermode(null);
         }
         canvas.restoreToCount(layerId);
-        if (imgSrc != 0){
-//            canvas.drawBitmap();
+
+        if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
+//            canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
+            canvas.drawBitmap(bitmap,new Matrix(),bgPaint);
         }
     }
 

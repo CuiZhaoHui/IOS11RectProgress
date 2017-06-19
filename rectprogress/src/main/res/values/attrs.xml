@@ -6,7 +6,7 @@
         <attr name="bgColor" format="color" />
         <attr name="contentPadding" format="color" />
         <attr name="progressColor" format="color" />
-        <attr name="iconSrc" format="integer" />
+        <attr name="iconSrc" format="reference" />
         <attr name="progressOrientation">
             <enum name="vertical" value="1" />
             <enum name="horizontal" value="2" />

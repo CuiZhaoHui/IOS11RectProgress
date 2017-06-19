@@ -7,8 +7,8 @@
     tools:context="com.czh.ios11rectprogress.MainActivity">
 
     <com.cui.rectprogress.RectProgress
-        android:layout_width="100dp"
-        android:layout_height="200dp"
+        android:layout_width="50dp"
+        android:layout_height="100dp"
         android:layout_gravity="center"
         app:progressOrientation="vertical"
         app:progressColor="@color/colorAccent"
