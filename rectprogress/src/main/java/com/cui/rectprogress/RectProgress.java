@@ -102,15 +102,15 @@ public class RectProgress extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        bgRect.set(iconPadding
-                , iconPadding
-                , getWidth() - iconPadding
-                , getHeight() - iconPadding);
+        bgRect.set(getPaddingLeft()
+                , getPaddingTop()
+                , getWidth() - getPaddingRight()
+                , getHeight() - getPaddingBottom());
 
-        progressRect.set(iconPadding
+        progressRect.set(bgRect.left
                 , bgRect.bottom - progress * bgRect.height() / max
-                , getWidth() - iconPadding
-                , getHeight() - iconPadding);
+                , bgRect.right
+                , bgRect.bottom);
 
         if (bitmap != null){
             srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -128,9 +128,6 @@ public class RectProgress extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        if (bgRect.isEmpty()) {
-//
-//        }
 
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
