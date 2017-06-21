@@ -44,11 +44,9 @@ public class RectProgress extends View {
     private int orientation = VERTICAL;
     private int max = 100;
     private int progress = 15;
-    private int imgSrc = 0;
     private Bitmap bitmap;
     private Rect srcRect;
     private Rect dstRect;
-    private Matrix bitmapMatrix;
     private float iconPadding;
 
 
@@ -77,8 +75,8 @@ public class RectProgress extends View {
             progress = typedArray.getInteger(R.styleable.RectProgress_progressValue, progress);
             max = typedArray.getInteger(R.styleable.RectProgress_progressMax, max);
             orientation = typedArray.getInteger(R.styleable.RectProgress_progressOrientation, VERTICAL);
-            imgSrc = typedArray.getResourceId(R.styleable.RectProgress_iconSrc, 0);
-            iconPadding = typedArray.getDimensionPixelSize(R.styleable.RectProgress_iconPadding,10);
+            int imgSrc = typedArray.getResourceId(R.styleable.RectProgress_iconSrc, 0);
+            iconPadding = typedArray.getDimensionPixelSize(R.styleable.RectProgress_iconPadding, 10);
             if (max < progress) {
                 progress = max;
             }
@@ -112,18 +110,18 @@ public class RectProgress extends View {
                 , bgRect.right
                 , bgRect.bottom);
 
-        if (bitmap != null){
+        if (bitmap != null) {
             srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
             int iconSideLength = (int) (bgRect.width() - iconPadding * 2);
-            dstRect = new Rect((int)bgRect.left + (int)iconPadding
-                    , (int)(bgRect.bottom - iconSideLength - iconPadding)
-                    , (int)bgRect.right - (int)iconPadding
-                    , (int)bgRect.bottom - (int)iconPadding);
+            dstRect = new Rect((int) bgRect.left + (int) iconPadding
+                    , (int) (bgRect.bottom - iconSideLength - iconPadding)
+                    , (int) bgRect.right - (int) iconPadding
+                    , (int) bgRect.bottom - (int) iconPadding);
         }
 
 
-        bitmapMatrix = new Matrix();
-        bitmapMatrix.setScale(0.5f,0.5f);
+        Matrix bitmapMatrix = new Matrix();
+        bitmapMatrix.setScale(0.5f, 0.5f);
     }
 
     @Override
@@ -142,7 +140,7 @@ public class RectProgress extends View {
 
 
             if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
-            canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
+                canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
 //                canvas.drawBitmap(bitmap, bitmapMatrix,bgPaint);
             }
 
@@ -157,26 +155,36 @@ public class RectProgress extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (bgRect.contains(event.getX(), event.getY())) {
-            if (orientation == VERTICAL) {
-
-            } else {
-
-            }
-
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    if (orientation == VERTICAL)
+        //在家进度条内才执行操作
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (bgRect.contains(event.getX(), event.getY())) {
+                    if (orientation == VERTICAL) {
+                        if (event.getY() < bgRect.top) {
+                            progressRect.top = bgRect.top;
+                        } else if (event.getY() > bgRect.bottom) {
+                            progressRect.top = bgRect.bottom;
+                        } else {
+                            progressRect.top = getPaddingTop() + event.getY();
+                        }
+                    }
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (orientation == VERTICAL) {
+                    if (event.getY() < bgRect.top) {
+                        progressRect.top = bgRect.top;
+                    } else if (event.getY() > bgRect.bottom) {
+                        progressRect.top = bgRect.bottom;
+                    } else {
                         progressRect.top = getPaddingTop() + event.getY();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if (orientation == VERTICAL)
-                        progressRect.top = getPaddingTop() + event.getY();
-                    break;
-            }
-            postInvalidate();
-            return true;
+                    }
+                }
+                break;
         }
+        postInvalidate();
+
 
         return super.onTouchEvent(event);
     }
