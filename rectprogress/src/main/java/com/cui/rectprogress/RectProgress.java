@@ -1,11 +1,9 @@
 package com.cui.rectprogress;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -33,7 +31,7 @@ public class RectProgress extends View {
     private int bgColor = defaultBgColor;
     private int progressColor = defaultProgressColor;
 
-    private Resources mResources;
+    //    private Resources mResources;
     /*画背景使用的Rect*/
     private RectF bgRect = new RectF();
     /*画进度使用的Rect*/
@@ -48,7 +46,7 @@ public class RectProgress extends View {
     private Rect srcRect;
     private Rect dstRect;
     private float iconPadding;
-
+    private int percent = 0;
 
     public RectProgress(Context context) {
         super(context);
@@ -120,8 +118,8 @@ public class RectProgress extends View {
         }
 
 
-        Matrix bitmapMatrix = new Matrix();
-        bitmapMatrix.setScale(0.5f, 0.5f);
+//        Matrix bitmapMatrix = new MatriØØx();
+//        bitmapMatrix.setScale(0.5f, 0.5f);
     }
 
     @Override
@@ -141,12 +139,11 @@ public class RectProgress extends View {
 
             if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
                 canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
-//                canvas.drawBitmap(bitmap, bitmapMatrix,bgPaint);
             }
 
         }
         canvas.restoreToCount(layerId);
-        // TODO: 2017/6/19  弄明白为什么在xml预览中,canvas.restoreToCount
+        // TODO: 弄明白为什么在xml预览中,canvas.restoreToCount
         // TODO: 会导致后续的canvas对象为空 但canvas.restore方法则不会导致这个问题
 //        canvas.restore();
 //        canvas.save();
@@ -159,35 +156,43 @@ public class RectProgress extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (bgRect.contains(event.getX(), event.getY())) {
+                    //按下时,在进度内才执行操作
                     if (orientation == VERTICAL) {
-                        if (event.getY() < bgRect.top) {
-                            progressRect.top = bgRect.top;
-                        } else if (event.getY() > bgRect.bottom) {
-                            progressRect.top = bgRect.bottom;
-                        } else {
-                            progressRect.top = getPaddingTop() + event.getY();
-                        }
+                        handleVerticalTouch(event);
                     }
+                    invalidate();
                     return true;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (orientation == VERTICAL) {
-                    if (event.getY() < bgRect.top) {
-                        progressRect.top = bgRect.top;
-                    } else if (event.getY() > bgRect.bottom) {
-                        progressRect.top = bgRect.bottom;
-                    } else {
-                        progressRect.top = getPaddingTop() + event.getY();
-                    }
+                    handleVerticalTouch(event);
                 }
                 break;
         }
-        postInvalidate();
-
-
+        invalidate();
         return super.onTouchEvent(event);
     }
+
+    private void handleVerticalTouch(MotionEvent event) {
+        if (orientation == VERTICAL) {
+            if (event.getY() < bgRect.top) {
+                progressRect.top = bgRect.top;
+            } else if (event.getY() > bgRect.bottom) {
+                progressRect.top = bgRect.bottom;
+            } else {
+                progressRect.top = getPaddingTop() + event.getY();
+            }
+            int tmp = (int) ((progressRect.height() / bgRect.height()) * 100);
+            if (percent != tmp) {
+                percent = tmp;
+                if (changedListener != null)
+                    changedListener.onProgressChanged(percent * max / 100, percent);
+
+            }
+        }
+    }
+
 
     private OnProgressChangedListener changedListener;
 
