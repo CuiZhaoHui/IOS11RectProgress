@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#cacaca"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.czh.ios11rectprogress.MainActivity">
 
@@ -11,8 +12,9 @@
         android:layout_width="100dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
+        app:bgColor="#cf000000"
         app:progressOrientation="vertical"
-        app:progressColor="@color/colorAccent"
+        app:progressColor="#ffffff"
         app:progressMax="100"
         app:iconSrc="@drawable/ic_light"
         app:progressValue="30"

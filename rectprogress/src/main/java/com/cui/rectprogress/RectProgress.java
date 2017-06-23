@@ -26,7 +26,7 @@ public class RectProgress extends View {
     private final int HORIZONTAL = 2;
 
     private final int defaultBgColor = 0xFf000000;
-    private final int defaultProgressColor = 0xFFffffff;
+    private final int defaultProgressColor = 0xFFFF4081;
 
     private int bgColor = defaultBgColor;
     private int progressColor = defaultProgressColor;
