@@ -138,8 +138,8 @@ public class RectProgress extends View {
             // draw progress
             canvas.drawRect(progressRect, progressPaint);
             bgPaint.setXfermode(null);
-
             if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
+                //draw icon
                 canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
             }
         }
@@ -189,7 +189,6 @@ public class RectProgress extends View {
                 percent = tmp;
                 if (changedListener != null)
                     changedListener.onProgressChanged(percent * max / 100, percent);
-
             }
         }
     }
