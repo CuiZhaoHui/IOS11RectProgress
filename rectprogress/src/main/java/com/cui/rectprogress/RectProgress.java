@@ -31,21 +31,27 @@ public class RectProgress extends View {
     private int bgColor = defaultBgColor;
     private int progressColor = defaultProgressColor;
 
-    //    private Resources mResources;
+    /*圆角弧度*/
+    private float rectRadius = 20f;
     /*画背景使用的Rect*/
     private RectF bgRect = new RectF();
     /*画进度使用的Rect*/
     private RectF progressRect = new RectF();
+    /*背景画笔*/
     private Paint bgPaint;
+    /*进度画笔*/
     private Paint progressPaint;
-
+    /*进度方向*/
     private int orientation = VERTICAL;
     private int max = 100;
     private int progress = 15;
     private Bitmap bitmap;
+    /*icon显示区域Rect*/
     private Rect srcRect;
+    /*icon显示位置Rect*/
     private Rect dstRect;
     private float iconPadding;
+    /*进度百分比*/
     private int percent = 0;
 
     public RectProgress(Context context) {
@@ -75,6 +81,7 @@ public class RectProgress extends View {
             orientation = typedArray.getInteger(R.styleable.RectProgress_progressOrientation, VERTICAL);
             int imgSrc = typedArray.getResourceId(R.styleable.RectProgress_iconSrc, 0);
             iconPadding = typedArray.getDimensionPixelSize(R.styleable.RectProgress_iconPadding, 10);
+            rectRadius = typedArray.getDimensionPixelSize(R.styleable.RectProgress_rectRadius, 20);
             if (max < progress) {
                 progress = max;
             }
@@ -117,30 +124,24 @@ public class RectProgress extends View {
                     , (int) bgRect.bottom - (int) iconPadding);
         }
 
-
-//        Matrix bitmapMatrix = new MatriØØx();
-//        bitmapMatrix.setScale(0.5f, 0.5f);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
         int layerId = canvas.saveLayer(0, 0, canvasWidth, canvasHeight, null, Canvas.ALL_SAVE_FLAG);
         {
             bgPaint.setColor(bgColor);
             // draw the background of progress
-            canvas.drawRoundRect(bgRect, 20, 20, bgPaint);
+            canvas.drawRoundRect(bgRect, rectRadius, rectRadius, bgPaint);
             // draw progress
             canvas.drawRect(progressRect, progressPaint);
             bgPaint.setXfermode(null);
 
-
             if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
                 canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
             }
-
         }
         canvas.restoreToCount(layerId);
         // TODO: 弄明白为什么在xml预览中,canvas.restoreToCount

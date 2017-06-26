@@ -4,6 +4,7 @@
         <attr name="progressValue" format="integer" />
         <attr name="progressMax" format="integer" />
         <attr name="bgColor" format="color" />
+        <attr name="rectRadius" format="dimension" />
         <attr name="iconPadding" format="dimension" />
         <attr name="progressColor" format="color" />
         <attr name="iconSrc" format="reference" />
