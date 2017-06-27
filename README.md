@@ -2,6 +2,8 @@ IOS11RectProgress
 ----
 仿iOS11 控制中心 调整亮度进度条
 
+![](https://github.com/CuiZhaoHui/IOS11RectProgress/blob/master/img/pic.gif)
+
 usage
 ----
 ```
