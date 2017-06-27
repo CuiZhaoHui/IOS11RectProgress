@@ -109,21 +109,36 @@ public class RectProgress extends View {
                 , getPaddingTop()
                 , getWidth() - getPaddingRight()
                 , getHeight() - getPaddingBottom());
+        if (orientation == VERTICAL) {
+            progressRect.set(bgRect.left
+                    , bgRect.bottom - progress * bgRect.height() / max
+                    , bgRect.right
+                    , bgRect.bottom);
+        } else {
+            progressRect.set(bgRect.left
+                    , bgRect.top
+                    , bgRect.left + progress * bgRect.width() / max
+                    , bgRect.bottom);
+        }
 
-        progressRect.set(bgRect.left
-                , bgRect.bottom - progress * bgRect.height() / max
-                , bgRect.right
-                , bgRect.bottom);
 
         if (bitmap != null) {
             srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-            int iconSideLength = (int) (bgRect.width() - iconPadding * 2);
-            dstRect = new Rect((int) bgRect.left + (int) iconPadding
-                    , (int) (bgRect.bottom - iconSideLength - iconPadding)
-                    , (int) bgRect.right - (int) iconPadding
-                    , (int) bgRect.bottom - (int) iconPadding);
+            int iconSideLength;
+            if (orientation == VERTICAL) {
+                iconSideLength = (int) (bgRect.width() - iconPadding * 2);
+                dstRect = new Rect((int) bgRect.left + (int) iconPadding
+                        , (int) (bgRect.bottom - iconSideLength - iconPadding)
+                        , (int) bgRect.right - (int) iconPadding
+                        , (int) bgRect.bottom - (int) iconPadding);
+            } else {
+                iconSideLength = (int) (bgRect.height() - iconPadding * 2);
+                dstRect = new Rect((int) bgRect.left + (int) iconPadding
+                        , (int) (bgRect.bottom - iconPadding - iconSideLength)
+                        , (int) (bgRect.left + iconPadding + iconSideLength)
+                        , (int) (bgRect.bottom - iconPadding));
+            }
         }
-
     }
 
     @Override
@@ -138,7 +153,7 @@ public class RectProgress extends View {
             // draw progress
             canvas.drawRect(progressRect, progressPaint);
             bgPaint.setXfermode(null);
-            if (bitmap != null && srcRect != null && dstRect != null && bgPaint != null) {
+            if (bitmap != null) {
                 //draw icon
                 canvas.drawBitmap(bitmap, srcRect, dstRect, bgPaint);
             }
@@ -158,33 +173,48 @@ public class RectProgress extends View {
             case MotionEvent.ACTION_DOWN:
                 if (bgRect.contains(event.getX(), event.getY())) {
                     //按下时,在进度内才执行操作
-                    if (orientation == VERTICAL) {
-                        handleVerticalTouch(event);
-                    }
+                    handleTouch(event);
                     invalidate();
                     return true;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (orientation == VERTICAL) {
-                    handleVerticalTouch(event);
-                }
+                handleTouch(event);
+                invalidate();
                 break;
         }
         invalidate();
         return super.onTouchEvent(event);
     }
 
-    private void handleVerticalTouch(MotionEvent event) {
+    private void handleTouch(MotionEvent event) {
         if (orientation == VERTICAL) {
             if (event.getY() < bgRect.top) {
+                //触点超出Progress顶部
                 progressRect.top = bgRect.top;
             } else if (event.getY() > bgRect.bottom) {
+                //触点超过Progress底部
                 progressRect.top = bgRect.bottom;
             } else {
-                progressRect.top = getPaddingTop() + event.getY();
+                progressRect.top = event.getY();
             }
             int tmp = (int) ((progressRect.height() / bgRect.height()) * 100);
+            if (percent != tmp) {
+                percent = tmp;
+                if (changedListener != null)
+                    changedListener.onProgressChanged(percent * max / 100, percent);
+            }
+        } else {
+            if (event.getX() > bgRect.right) {
+                //触点超出Progress右端
+                progressRect.right = bgRect.right;
+            } else if (event.getX() < bgRect.left) {
+                //触点超出Progress左端
+                progressRect.right = bgRect.left;
+            } else {
+                progressRect.right = event.getX();
+            }
+            int tmp = (int) ((progressRect.width() / bgRect.width()) * 100);
             if (percent != tmp) {
                 percent = tmp;
                 if (changedListener != null)
