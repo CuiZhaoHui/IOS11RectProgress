@@ -23,6 +23,7 @@
         />
 
     <com.cui.rectprogress.RectProgress
+        android:id="@+id/rectProgress_main1"
         android:layout_width="200dp"
         android:layout_height="100dp"
         app:bgColor="#ef404040"
@@ -33,6 +34,14 @@
         app:iconSrc="@drawable/ic_light"
         app:progressValue="30"
         app:iconPadding="20dp"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="setRandomProgress"
+        android:onClick="setProgress"
         />
 
 </LinearLayout>

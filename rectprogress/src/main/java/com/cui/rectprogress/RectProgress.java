@@ -1,5 +1,6 @@
 package com.cui.rectprogress;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -78,6 +79,8 @@ public class RectProgress extends View {
             progressColor = typedArray.getColor(R.styleable.RectProgress_progressColor, defaultProgressColor);
             progress = typedArray.getInteger(R.styleable.RectProgress_progressValue, progress);
             max = typedArray.getInteger(R.styleable.RectProgress_progressMax, max);
+            if (max <= 0)
+                throw new RuntimeException("Max 必须大于 0");
             orientation = typedArray.getInteger(R.styleable.RectProgress_progressOrientation, VERTICAL);
             int imgSrc = typedArray.getResourceId(R.styleable.RectProgress_iconSrc, 0);
             iconPadding = typedArray.getDimensionPixelSize(R.styleable.RectProgress_iconPadding, 10);
@@ -109,18 +112,7 @@ public class RectProgress extends View {
                 , getPaddingTop()
                 , getWidth() - getPaddingRight()
                 , getHeight() - getPaddingBottom());
-        if (orientation == VERTICAL) {
-            progressRect.set(bgRect.left
-                    , bgRect.bottom - progress * bgRect.height() / max
-                    , bgRect.right
-                    , bgRect.bottom);
-        } else {
-            progressRect.set(bgRect.left
-                    , bgRect.top
-                    , bgRect.left + progress * bgRect.width() / max
-                    , bgRect.bottom);
-        }
-
+        computeProgressRect();
 
         if (bitmap != null) {
             srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -201,8 +193,9 @@ public class RectProgress extends View {
             int tmp = (int) ((progressRect.height() / bgRect.height()) * 100);
             if (percent != tmp) {
                 percent = tmp;
+                progress = percent * max / 100;
                 if (changedListener != null)
-                    changedListener.onProgressChanged(percent * max / 100, percent);
+                    changedListener.onProgressChanged(progress, percent);
             }
         } else {
             if (event.getX() > bgRect.right) {
@@ -217,8 +210,9 @@ public class RectProgress extends View {
             int tmp = (int) ((progressRect.width() / bgRect.width()) * 100);
             if (percent != tmp) {
                 percent = tmp;
+                progress = percent * max / 100;
                 if (changedListener != null)
-                    changedListener.onProgressChanged(percent * max / 100, percent);
+                    changedListener.onProgressChanged(progress, percent);
             }
         }
     }
@@ -232,6 +226,60 @@ public class RectProgress extends View {
 
     public interface OnProgressChangedListener {
         void onProgressChanged(int currentValue, int percent);
+    }
+
+    public void setMax(int m) {
+        if (max <= 0)
+            throw new RuntimeException("Max 必须大于 0");
+        max = m;
+    }
+
+    public void setProgress(int p) {
+        int oldProgress = progress;
+        progress = p;
+        if (max < progress) {
+            progress = max;
+        } else if (progress < 0)
+            progress = 0;
+
+        startProgressAnim(oldProgress);
+    }
+
+    private ValueAnimator valueAnimator;
+
+    /**/
+    private void startProgressAnim(int oldProgress) {
+        if (valueAnimator != null && valueAnimator.isRunning()) {
+            valueAnimator.cancel();
+        }
+        valueAnimator = ValueAnimator.ofInt(oldProgress, progress);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                progress = (int) animation.getAnimatedValue();
+                computeProgressRect();
+                invalidate();
+            }
+        });
+        valueAnimator.setDuration(1000);
+        valueAnimator.start();
+    }
+
+    /**
+     * 计算进度Progress
+     */
+    private void computeProgressRect() {
+        if (orientation == VERTICAL) {
+            progressRect.set(bgRect.left
+                    , bgRect.bottom - progress * bgRect.height() / max
+                    , bgRect.right
+                    , bgRect.bottom);
+        } else {
+            progressRect.set(bgRect.left
+                    , bgRect.top
+                    , bgRect.left + progress * bgRect.width() / max
+                    , bgRect.bottom);
+        }
     }
 
 }
